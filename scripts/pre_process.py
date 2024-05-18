@@ -110,7 +110,6 @@ def load_data(index):
     acc_data_path = os.path.join(os.path.dirname(__file__), '../', acc_path)
     #label_data_path = os.path.join(os.path.dirname(__file__), '../', label_path)
     #pickle_data_path = os.path.join(os.path.dirname(__file__), '../', pickle_path)
-    
     try:
         acc_data = os.listdir(acc_data_path)[index]
         acc_data_path = os.path.join(acc_data_path, acc_data)
@@ -162,6 +161,6 @@ if __name__ == '__main__':
     if file_type:
         # acc_data, label_data = pre_process(index)
         acc_data = pre_process(index)
-        # print(acc_data)
+        # print(acc_data.head())
         # print(label_data)        
         

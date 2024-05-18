@@ -1,0 +1,58 @@
+[
+    {
+        "acc_data": "RawData-02-07-13_39_04-3_bdo_ofc_deorai.csv",
+        "label_data": "RawData-02-07-13_39_04-3_bdo_ofc_deorai.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-13_54_46-3_deorai_kante.csv",
+        "label_data": "RawData-02-07-13_54_46-3_deorai_kante.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-14_00_41-3_kante_kotboundary.csv",
+        "label_data": "RawData-02-07-14_00_41-3_kante_kotboundary.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-14_11_58-3_kotboundary_mandawkarwadi.csv",
+        "label_data": "RawData-02-07-14_11_58-3_kotboundary_mandawkarwadi.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-14_19_32-3_mandawkarwadi_kotkoldheboundary.csv",
+        "label_data": "RawData-02-07-14_19_32-3_mandawkarwadi_kotkoldheboundary.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-14_36_02-3_kotkoldheboundary_koldhegavaneboundary.csv",
+        "label_data": "RawData-02-07-14_36_02-3_kotkoldheboundary_koldhegavaneboundary.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-14_54_21-3_koldhegavaneboundary_krushishaladevdhe.csv",
+        "label_data": "RawData-02-07-14_54_21-3_koldhegavaneboundary_krushishaladevdhe.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-14_57_46-3_krushishaladevdhe_nh66.csv",
+        "label_data": "RawData-02-07-14_57_46-3_krushishaladevdhe_nh66.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-15_58_41-3_sh168_vivliboundary_mdr62.csv",
+        "label_data": "RawData-02-07-15_58_41-3_sh168_vivliboundary_mdr62.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-16_18_09-3_vivliboundary_korle_mdr62.csv",
+        "label_data": "RawData-02-07-16_18_09-3_vivliboundary_korle_mdr62.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-16_25_08-3_korle_sh175_mdr62.csv",
+        "label_data": "RawData-02-07-16_25_08-3_korle_sh175_mdr62.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-16_32_01-3_korle_govil_sh175.csv",
+        "label_data": "RawData-02-07-16_32_01-3_korle_govil_sh175.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-16_43_54-3_sh175_wadgaonschoolno1.csv",
+        "label_data": "RawData-02-07-16_43_54-3_sh175_wadgaonschoolno1.csv"
+    },
+    {
+        "acc_data": "RawData-02-07-17_06_44-3_wadgaonschoono1_sh168_odr94.csv",
+        "label_data": "RawData-02-07-17_06_44-3_wadgaonschoono1_sh168_odr94.csv"
+    }
+]
