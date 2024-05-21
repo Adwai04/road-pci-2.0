@@ -7,7 +7,7 @@ import time
 import configparser
 from scipy import stats
 
-from filter import return_filtered_df
+from .filter import return_filtered_df
 
 class SlidingWindow:
 	def __init__(self, signal: pd.DataFrame, window_size: int, overlap: float) -> None:

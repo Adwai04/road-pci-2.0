@@ -8,7 +8,7 @@ import sys
 from scipy import signal
 from scipy.signal import butter, filtfilt
 
-from reorient import return_reoriented_df
+from .reorient import return_reoriented_df
 
 class ButterFilter:
 	def __init__(self, signal: pd.DataFrame, low_cutoff: float, high_cutoff: float, fs: float, order: int = 5) -> None:

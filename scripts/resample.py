@@ -9,7 +9,7 @@ from scipy.linalg import eigh
 from geopy import distance
 import time
 
-from pre_process import pre_process
+from .pre_process import pre_process
 
 class BernsteinResample:
     def __init__(self, signal: pd.DataFrame, f_resampling: float) -> None:
