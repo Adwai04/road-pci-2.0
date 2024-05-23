@@ -6,7 +6,7 @@ import configparser
 import time
 import copy
 
-from .windows import create_sliding_windows
+from windows import create_sliding_windows
 
 def ten_pt_avg(data, method = 'ISO'):
     sorted_data = np.sort(data.flatten())
@@ -27,9 +27,9 @@ def peak_to_peak(data):
 def rms(data):
 	return np.sqrt(np.mean(data**2))
 
-def get_features(index, features=['z_rms', 'Velocity'], training=False):
+def get_features(index, features=['z_rms', 'Velocity'], training=False, resample=False):
     features.extend(['Latitude', 'Longitude'])
-    window_df = create_sliding_windows(index)
+    window_df = create_sliding_windows(index, resample=resample, training=training)
     feature_df = window_df
     start = time.process_time()
 

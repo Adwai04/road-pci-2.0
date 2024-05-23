@@ -8,8 +8,9 @@ import numpy as np
 from scipy.linalg import eigh
 from geopy import distance
 import time
+from datetime import datetime
 
-from .pre_process import pre_process
+from pre_process import pre_process
 
 class BernsteinResample:
     def __init__(self, signal: pd.DataFrame, f_resampling: float) -> None:
@@ -95,9 +96,31 @@ def merge_df(signal: pd.DataFrame, resampled_dataframe: pd.DataFrame) -> pd.Data
     merged_df = pd.merge_asof(resampled_dataframe, signal[['Time', 'Velocity', 'Prev_Velocity', 'Next_Velocity', 'Latitude', 'Longitude']], on='Time', direction='nearest')
     return merged_df
 
-def return_resampled_df(index: int, f=None) -> pd.DataFrame:
+def time_to_seconds(df) -> pd.DataFrame:
+    time = df['Time']
+    time = [datetime.strptime(x, '%Y-%m-%d %H:%M:%S:%f') for x in time]
+    time = pd.Series(time)
+    time = time.apply(lambda x: x.timestamp())
+    df['Time'] = time
+    return df
+
+def return_resampled_df(index: int, f=None, label_path=None, acc_path=None) -> pd.DataFrame:
     start = time.process_time()
     acc_data = pre_process(index)
+    if acc_path is not None:
+        acc_data = pd.read_pickle(acc_path)
+        if acc_data['Time'].dtype != float:
+            acc_data = time_to_seconds(acc_data)
+    label_df = None
+    if label_path is not None:
+        label_df = pd.read_csv(label_path)
+        label_time = label_df['Time']
+        if label_df['Time'].dtype != float:
+            label_time = [datetime.strptime(x, '%Y-%m-%d %H:%M:%S:%f') for x in label_time]
+            label_time = pd.Series(label_time)
+            label_time = label_time.apply(lambda x: x.timestamp()) 
+        time_ = acc_data['Time']
+        label_df['Time'] = label_time - time_[0]
     print("Individual time taken by pre-process:", round(time.process_time()-start, 2), "seconds for data size:", len(acc_data))
     start = time.process_time()
     f_resampling = read_config()
@@ -106,10 +129,18 @@ def return_resampled_df(index: int, f=None) -> pd.DataFrame:
     resampled_acc_data = resampled_dataframe(acc_data, f_resampling)
     acc_data_final = merge_df(acc_data, resampled_acc_data)
     print("Individual time taken by resample:", round(time.process_time()-start, 2), "seconds for data size:", len(acc_data))
+    if label_df is not None:
+        acc_data_final = pd.merge_asof(acc_data_final, label_df[['Time', 'Label']], on='Time', direction='nearest')
     return acc_data_final
 
 if __name__ == '__main__':
-    index = int(sys.argv[1])
-    f_resampling = int(sys.argv[2])
-    resampled_df = return_resampled_df(index, f_resampling)
-    print(resampled_df.head())
+    # index = int(sys.argv[1])
+    # f_resampling = int(sys.argv[2])
+    # resampled_df = return_resampled_df(index, f_resampling)
+    # print(resampled_df.head())
+    date = '29March2024'
+    data_num = 3
+    label_path = os.path.join(os.getcwd(), '../data/labels/'+date+'/'+'auto_'+str(data_num)+'_labels.csv')
+    acc_path = os.path.join(os.getcwd(), '../data/acc/'+date+'/pickledData/pickled'+str(data_num)+'.pkl')
+    cur_data = return_resampled_df(0, label_path=label_path, acc_path=acc_path)
+    print(cur_data.head())

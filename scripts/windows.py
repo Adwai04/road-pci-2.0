@@ -7,7 +7,7 @@ import time
 import configparser
 from scipy import stats
 
-from .filter import return_filtered_df
+from filter import return_filtered_df
 
 class SlidingWindow:
 	def __init__(self, signal: pd.DataFrame, window_size: int, overlap: float) -> None:
@@ -46,16 +46,17 @@ class SlidingWindow:
 		else:
 			self.window_df = pd.concat([window_df, self.window_df], axis=1)
 
-	def add_labels(self, labels, type='max'):
+	def add_labels(self, labels : np.ndarray, type='max'): #label_df
+		# merged_df = pd.merge_asof(self.signal, label_df[['Time', 'Label']], on='Time', direction='nearest')
+		# labels = merged_df['Label'].to_numpy()
 		# types: max, mode, avg, min
 		assert len(labels) == len(self.signal)
-		labels = np.array(labels)
 		window_size = self.window_size
 		overlap = self.overlap
 		step_size = int(window_size * (1 - overlap))
 		n_windows = (len(self.signal) - window_size) // step_size + 1
 
-		window_vals = np.empty((n_windows, window_size))
+		window_vals = np.empty(n_windows)  # ((n_windows, window_size))
 		for i in range(n_windows):
 			start_idx = i*step_size
 			val = None
@@ -75,7 +76,6 @@ class SlidingWindow:
 		return self.window_df
 
 			
-
 def read_config() -> Tuple[int, float]:
 	config_path = os.path.join(os.path.dirname(__file__), '../', 'config.ini')
 	config = configparser.ConfigParser()
@@ -84,10 +84,10 @@ def read_config() -> Tuple[int, float]:
 	overlap = config.get('Parameters', 'OVERLAP')
 	return int(window_size), float(overlap)
 
-def create_sliding_windows(index: int, window=None, ovlap=None) -> np.ndarray:
+def create_sliding_windows(index: int, window=None, ovlap=None, resample=False, training=False) -> np.ndarray:
 	print("Creating sliding windows...")
 	window_size, overlap = read_config()
-	signal, _, _ = return_filtered_df(index)
+	signal, _, _ = return_filtered_df(index, resample=resample)
 	if window is not None:
 		window_size = window
 	if ovlap is not None:
@@ -95,6 +95,8 @@ def create_sliding_windows(index: int, window=None, ovlap=None) -> np.ndarray:
 	start = time.process_time()
 	sliding_window = SlidingWindow(signal, window_size, overlap)
 	sliding_window.create_windows()
+	if training:
+		sliding_window.add_labels(signal['Label'].to_numpy())
 	window_df = sliding_window.get_windows()
 	print("Individual time taken by window:", round(time.process_time()-start, 5), "seconds for data size:", len(signal))
 	return window_df

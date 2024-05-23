@@ -8,7 +8,7 @@ import sys
 from scipy import signal
 from scipy.signal import butter, filtfilt
 
-from .reorient import return_reoriented_df
+from reorient import return_reoriented_df
 
 class ButterFilter:
 	def __init__(self, signal: pd.DataFrame, low_cutoff: float, high_cutoff: float, fs: float, order: int = 5) -> None:
@@ -70,9 +70,9 @@ def butter_filter(signal: pd.DataFrame, low_cutoff: float, high_cutoff: float, f
 
 
 
-def return_filtered_df(index: int) -> pd.DataFrame:
+def return_filtered_df(index: int, resample=False) -> pd.DataFrame:
 	low_cutoff, high_cutoff, fs, order = read_config()
-	signal = return_reoriented_df(index)
+	signal = return_reoriented_df(index, resample=resample)
 	start = time.process_time()
 	x_lp, y_lp, z_lp = butter_filter(signal, low_cutoff, high_cutoff, fs, order, filter_type='lowpass')
 	x_hp, y_hp, z_hp = butter_filter(signal, low_cutoff, high_cutoff, fs, order, filter_type='highpass')
@@ -99,6 +99,7 @@ def return_filtered_df(index: int) -> pd.DataFrame:
 if __name__ == '__main__':
 	index = int(sys.argv[1])
 	signal_lp, signal_hp, signal_bp = return_filtered_df(index)#, 0.5, 20, 50, 5)
+	# print(signal_lp['Time'])
 	print(signal_lp)
 	# print("Highpass filtered signal:", signal_hp)
 	# print("Bandpass filtered signal:", signal_bp)

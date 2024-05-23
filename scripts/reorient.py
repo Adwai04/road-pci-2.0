@@ -1,8 +1,9 @@
 import os
 from typing import Tuple
 import numpy as np
+import pandas as pd
 import configparser
-from .resample import return_resampled_df
+from resample import return_resampled_df
 import sys
 import time
 
@@ -50,19 +51,40 @@ def read_config():
 	tuning_time = config.get('Parameters', 'TUNING_TIME')
 	return float(f_resampling), float(tuning_time)
 
+def get_stored_resampled_data(index):
+	config_path = os.path.join(os.path.dirname(__file__), '../', 'config.ini')
+	config = configparser.ConfigParser()
+	config.read(config_path)
+	rel_path = config.get('Paths', 'test_data_directory')
+	abs_path = os.path.join(os.path.dirname(__file__), '../', rel_path)
+	files = os.listdir(abs_path)
+	data_file = None
+	try:
+		data_file = files[index]
+	except Exception as e:
+		print(e)
+		return None
+	file_path = os.path.join(abs_path, data_file)
+	test_df = pd.read_csv(file_path)
+	return test_df
+
+
 def merge_df(reoreinted_df, resampled_df):
 	resampled_df['x_acc'] = reoreinted_df[0]
 	resampled_df['y_acc'] = reoreinted_df[1]
 	resampled_df['z_acc'] = reoreinted_df[2]
 	return resampled_df
 
-def return_reoriented_df(index, re_freq=None, t_time=None):
+def return_reoriented_df(index, re_freq=None, t_time=None, resample=False):
 	f_resampling, tuning_time = read_config()
 	if re_freq is not None:
 		f_resampling = re_freq
 	if t_time is not None:
 		tuning_time = t_time
-	resampled_df = return_resampled_df(index)
+	if not resample:
+		resampled_df = return_resampled_df(index)
+	else:
+		resampled_df = get_stored_resampled_data(index)
 	start = time.process_time()	
 	euler_ro = EulerRO(resampled_df, f_resampling, tuning_time)
 	reoreinted_df = euler_ro.calculate_rotation()
