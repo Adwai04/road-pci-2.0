@@ -6,7 +6,7 @@ import configparser
 import time
 import copy
 
-from windows import create_sliding_windows
+from .windows import create_sliding_windows
 
 def ten_pt_avg(data, method = 'ISO'):
     sorted_data = np.sort(data.flatten())

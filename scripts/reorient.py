@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 import configparser
-from resample import return_resampled_df
+from .resample import return_resampled_df
 import sys
 import time
 

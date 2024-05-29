@@ -4,8 +4,18 @@ import pandas as pd
 import configparser
 import joblib
 import json
+import copy
 
 from scripts.features import get_features
+
+def show_data_indices():
+	config = configparser.ConfigParser()
+	config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+	config.read(config_path)
+	acc_path = config.get('Paths', 'acc_data_directory')
+	acc_data_path = os.path.join(os.path.dirname(__file__), acc_path)
+	for idx, file in enumerate(os.listdir(acc_data_path)):
+		print(idx, file)
 
 def read_config(model='rf', data='roughness'):
 	config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
@@ -35,6 +45,7 @@ class Predictor:
 		self.model = None
 		self.pred_df = None
 		self.final_df = None
+		print(self.features[self.data_type])
 
 	def load_model(self):
 		model = read_config(self.model_type, self.data_type)
@@ -58,7 +69,7 @@ class Predictor:
 
 	def predict(self, index):
 		self.load_model()
-		feature_df = get_features(index, features=self.features[self.data_type])
+		feature_df = get_features(index, features=copy.deepcopy(self.features[self.data_type]))
 		test_df = feature_df[self.features[self.data_type]]
 		preds = self.model.predict(test_df)
 		windowed_pred_df = feature_df[['Latitude', 'Longitude']]
@@ -83,12 +94,20 @@ class Predictor:
 
 if __name__ == '__main__':
 	index = int(sys.argv[1])
+	filename = str(sys.argv[2])
+	if index < 0:
+		show_data_indices()
+		exit()
+	if filename[-4:] == '.csv':
+		filename = filename[:-4]
+	elif filename == '0':
+		filename = 'track_1'
 	predictor = Predictor(model='rf', data='roughness')
 	predictor.predict(index)
 	final_df = predictor.get_final_preds()
 	print(final_df.head())
 	
-	with open('track_1.csv', 'w') as f:
+	with open(filename+'.csv', 'w') as f:
 		f.write('Latitude, Longitude, Prediction\n')
 		for i in range(len(final_df)):
 			lat = final_df['Latitude'][i]
