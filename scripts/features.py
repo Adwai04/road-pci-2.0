@@ -27,9 +27,13 @@ def peak_to_peak(data):
 def rms(data):
 	return np.sqrt(np.mean(data**2))
 
-def get_features(index, features=['z_rms', 'Velocity'], training=False, resample=False):
-    features.extend(['Latitude', 'Longitude'])
-    window_df = create_sliding_windows(index, resample=resample, training=training)
+def get_features(index, features=['z_rms', 'Velocity'], training=False, label_df=None, model_type='roughness'):
+    columns = copy.deepcopy(features)
+    columns.extend(['Latitude', 'Longitude'])
+    if training and label_df is None:
+        print("No label data provided -> Training mode turned off!!")
+        training = False
+    window_df = create_sliding_windows(index, label_df=label_df, model_type=model_type)
     feature_df = window_df
     start = time.process_time()
 
@@ -37,6 +41,7 @@ def get_features(index, features=['z_rms', 'Velocity'], training=False, resample
     feature_df['z_max'] = window_df['z_acc'].apply(lambda x: np.max(x))
     feature_df['z_min'] = window_df['z_acc'].apply(lambda x: np.min(x))
     feature_df['z_mean'] = window_df['z_acc'].apply(lambda x: np.mean(x))
+    feature_df['z_variance'] = window_df['z_acc'].apply(lambda x: np.var(x))
     feature_df['z_tpah'] = window_df['z_acc'].apply(lambda x: ten_pt_avg(x))
     feature_df['z_p2p'] = window_df['z_acc'].apply(lambda x: peak_to_peak(x))
     feature_df['Velocity'] = window_df['Velocity'].apply(lambda x: np.mean(x))
@@ -48,14 +53,13 @@ def get_features(index, features=['z_rms', 'Velocity'], training=False, resample
     elif training and 'Label' not in window_df:
         print("[ERROR] Labels not added in window_df => training_df with labels failed!!")
     elif training and 'Label' in window_df:
-        features.append('Label')
+        columns.append('Label')
 
     try:
-        feature_df = feature_df[features]
+        feature_df = feature_df[columns]
     except:
-        print(f'[ERROR] {features} not found')
-
-    print("Individual time taken by feature:", round(time.process_time()-start, 5), "seconds for data size:", len(window_df)*len(window_df['z_acc'][0]))
+        print(f'[ERROR] {columns} not found')
+    # print("Individual time taken by feature:", round(time.process_time()-start, 5), "seconds for data size:", len(window_df)*len(window_df['z_acc'][0]))
 
     return feature_df
 

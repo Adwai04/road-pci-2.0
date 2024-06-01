@@ -57,7 +57,7 @@ def read_config() -> Tuple[float, float, float, int]:
 	return float(low_cutoff), float(high_cutoff), float(fs), int(order)
 
 def butter_filter(signal: pd.DataFrame, low_cutoff: float, high_cutoff: float, fs: float, order: int, filter_type: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-	print(f"Applying {filter_type} filter...")
+	# print(f"Applying {filter_type} filter...")
 	butter_filter = ButterFilter(signal, low_cutoff, high_cutoff, fs, order)
 	if filter_type == 'lowpass':
 		x, y, z = butter_filter.butter_lowpass()
@@ -70,9 +70,9 @@ def butter_filter(signal: pd.DataFrame, low_cutoff: float, high_cutoff: float, f
 
 
 
-def return_filtered_df(index: int, resample=False) -> pd.DataFrame:
+def return_filtered_df(index: int) -> pd.DataFrame:
 	low_cutoff, high_cutoff, fs, order = read_config()
-	signal = return_reoriented_df(index, resample=resample)
+	signal = return_reoriented_df(index)
 	start = time.process_time()
 	x_lp, y_lp, z_lp = butter_filter(signal, low_cutoff, high_cutoff, fs, order, filter_type='lowpass')
 	x_hp, y_hp, z_hp = butter_filter(signal, low_cutoff, high_cutoff, fs, order, filter_type='highpass')
@@ -93,7 +93,7 @@ def return_filtered_df(index: int, resample=False) -> pd.DataFrame:
 	signal_bp['x_acc'] = x_bp
 	signal_bp['y_acc'] = y_bp
 	signal_bp['z_acc'] = z_bp
-	print("Individual time taken by filter:", round(time.process_time()-start, 5), "seconds for data size:", len(signal))
+	# print("Individual time taken by filter:", round(time.process_time()-start, 5), "seconds for data size:", len(signal))
 	return signal_lp, signal_hp, signal_bp
 
 if __name__ == '__main__':

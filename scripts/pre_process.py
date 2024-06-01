@@ -146,10 +146,6 @@ def pre_process(index):
     acc_data = StandardPreProcessor(acc_data).pre_process_data()
     acc_data = PreSample(acc_data, index, downscale_freq, upscale_freq).pre_process_data()
     acc_data['Time'] = acc_data['Time'].apply(lambda x: x - acc_data['Time'].iloc[0])
-    # label_data = StandardPreProcessor(label_data).pre_process_data()
-    
-    # start_time = acc_data['Time'][0]
-    # label_data['Time'] = label_data['Time'].apply(lambda x: x - start_time)
 
     return acc_data
 
