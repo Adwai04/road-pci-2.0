@@ -70,9 +70,9 @@ def butter_filter(signal: pd.DataFrame, low_cutoff: float, high_cutoff: float, f
 
 
 
-def return_filtered_df(index: int) -> pd.DataFrame:
+def return_filtered_df(index: int = None, input_df: pd.DataFrame = None) -> pd.DataFrame:
 	low_cutoff, high_cutoff, fs, order = read_config()
-	signal = return_reoriented_df(index)
+	signal = return_reoriented_df(index=index, input_df=input_df)
 	start = time.process_time()
 	x_lp, y_lp, z_lp = butter_filter(signal, low_cutoff, high_cutoff, fs, order, filter_type='lowpass')
 	x_hp, y_hp, z_hp = butter_filter(signal, low_cutoff, high_cutoff, fs, order, filter_type='highpass')

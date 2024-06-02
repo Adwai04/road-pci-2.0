@@ -8,6 +8,7 @@ from datetime import datetime
 import pickle
 import numpy as np
 import pandas as pd
+import copy
 
 class StandardPreProcessor:
     def __init__(self, data: pd.DataFrame) -> None:
@@ -105,36 +106,43 @@ def read_config():
 
     return acc_data, int(downscale_freq), int(upscale_freq), pre_process_flag
 
-def load_data(index):
+def load_data(index=None, load_acc=False):
     acc_path, downscale_freq, upscale_freq, pre_process_flag = read_config()
-    acc_data_path = os.path.join(os.path.dirname(__file__), '../', acc_path)
+    if load_acc:
+        acc_data_path = os.path.join(os.path.dirname(__file__), '../', acc_path)
     #label_data_path = os.path.join(os.path.dirname(__file__), '../', label_path)
     #pickle_data_path = os.path.join(os.path.dirname(__file__), '../', pickle_path)
-    try:
-        acc_data = os.listdir(acc_data_path)[index]
-        acc_data_path = os.path.join(acc_data_path, acc_data)
-        # print(acc_data_path)
-        if acc_data_path[-4:] == '.csv':
-            acc_data = pd.read_csv(acc_data_path)
-        elif acc_data_path[-4:] == '.pkl':
-            acc_data = pd.read_pickle(acc_data_path)
-        
-        # label_data = os.listdir(label_data_path)[index]
-        # label_data_path = os.path.join(label_data_path, label_data)
-        # label_data = pd.read_csv(label_data_path)
+        try:
+            acc_data = os.listdir(acc_data_path)[index]
+            acc_data_path = os.path.join(acc_data_path, acc_data)
+            # print(acc_data_path)
+            if acc_data_path[-4:] == '.csv':
+                acc_data = pd.read_csv(acc_data_path)
+            elif acc_data_path[-4:] == '.pkl':
+                acc_data = pd.read_pickle(acc_data_path)
+            
+            # label_data = os.listdir(label_data_path)[index]
+            # label_data_path = os.path.join(label_data_path, label_data)
+            # label_data = pd.read_csv(label_data_path)
 
-        # acc_data_pickled = os.listdir(acc_data_path)[index]
-        # acc_data_pickled_path = os.path.join(acc_data_path, acc_data_pickled)
-        # acc_data_pickled = pd.read_pickle(acc_data_pickled_path)
+            # acc_data_pickled = os.listdir(acc_data_path)[index]
+            # acc_data_pickled_path = os.path.join(acc_data_path, acc_data_pickled)
+            # acc_data_pickled = pd.read_pickle(acc_data_pickled_path)
 
-        return acc_data, downscale_freq, upscale_freq, pre_process_flag
+            return acc_data, downscale_freq, upscale_freq, pre_process_flag
 
-    except Exception as e:
-        print(e)
-        return None, None, None, None
+        except Exception as e:
+            print(e)
+            return None, None, None, None
+    else:
+        return None, downscale_freq, upscale_freq, pre_process_flag
 
-def pre_process(index):
-    acc_data, downscale_freq, upscale_freq, pre_process_flag = load_data(index)
+def pre_process(index=None, input_df: pd.DataFrame = None):
+    if input_df is None:
+        acc_data, downscale_freq, upscale_freq, pre_process_flag = load_data(index=index, load_acc=True)
+    else:
+        acc_data = copy.deepcopy(input_df)
+        _, downscale_freq, upscale_freq, pre_process_flag = load_data(load_acc=False)
     if 'accTime' in acc_data and 'Time' not in acc_data:
         acc_data.rename(columns = {'accTime': 'Time'}, inplace = True) 
     if 'Lng' in acc_data and 'Longitude' not in acc_data:

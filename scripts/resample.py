@@ -104,9 +104,9 @@ def time_to_seconds(df) -> pd.DataFrame:
     df['Time'] = time
     return df
 
-def return_resampled_df(index: int, f=None) -> pd.DataFrame:
+def return_resampled_df(index: int = None, f=None, input_df: pd.DataFrame = None) -> pd.DataFrame:
     start = time.process_time()
-    acc_data = pre_process(index)
+    acc_data = pre_process(index=index, input_df=input_df)
     # print("Individual time taken by pre-process:", round(time.process_time()-start, 2), "seconds for data size:", len(acc_data))
     start = time.process_time()
     f_resampling = read_config()

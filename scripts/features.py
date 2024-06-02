@@ -27,13 +27,13 @@ def peak_to_peak(data):
 def rms(data):
 	return np.sqrt(np.mean(data**2))
 
-def get_features(index, features=['z_rms', 'Velocity'], training=False, label_df=None, model_type='roughness'):
+def get_features(index: int = None, features=['z_rms', 'Velocity'], training=False, label_df=None, pred_type='roughness', input_df: pd.DataFrame = None):
     columns = copy.deepcopy(features)
     columns.extend(['Latitude', 'Longitude'])
     if training and label_df is None:
         print("No label data provided -> Training mode turned off!!")
         training = False
-    window_df = create_sliding_windows(index, label_df=label_df, model_type=model_type)
+    window_df = create_sliding_windows(index=index, label_df=label_df, pred_type=pred_type, input_df=input_df)
     feature_df = window_df
     start = time.process_time()
 

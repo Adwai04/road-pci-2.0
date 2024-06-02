@@ -57,13 +57,13 @@ def merge_df(reoreinted_df, resampled_df):
 	resampled_df['z_acc'] = reoreinted_df[2]
 	return resampled_df
 
-def return_reoriented_df(index, re_freq=None, t_time=None):
+def return_reoriented_df(index=None, re_freq=None, t_time=None, input_df: pd.DataFrame = None):
 	f_resampling, tuning_time = read_config()
 	if re_freq is not None:
 		f_resampling = re_freq
 	if t_time is not None:
 		tuning_time = t_time
-	resampled_df = return_resampled_df(index)
+	resampled_df = return_resampled_df(index=index, input_df=input_df)
 	start = time.process_time()	
 	euler_ro = EulerRO(resampled_df, f_resampling, tuning_time)
 	reoreinted_df = euler_ro.calculate_rotation()

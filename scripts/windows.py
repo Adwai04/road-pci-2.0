@@ -72,11 +72,11 @@ class SlidingWindow:
 			window_vals[i] = int(val)
 		self.window_df['Label'] = list(window_vals)
 
-	def filter_labels(self, model_type='roughness'):
+	def filter_labels(self, pred_type='roughness'):
 		data = self.window_df
-		if model_type == 'roughness':
+		if pred_type == 'roughness':
 			final_data = data[~data['Label'].isin(self.event_vals)]
-		elif model_type == 'event':
+		elif pred_type == 'event':
 			data.loc[~data['Label'].isin(self.event_vals), 'Label'] = 0
 			final_data = data
 		self.window_df = final_data.reset_index(drop=True)
@@ -93,10 +93,10 @@ def read_config() -> Tuple[int, float]:
 	overlap = config.get('Parameters', 'OVERLAP')
 	return int(window_size), float(overlap)
 
-def create_sliding_windows(index: int, window=None, ovlap=None, label_df=None, model_type='roughness') -> np.ndarray:
+def create_sliding_windows(index: int = None, window=None, ovlap=None, label_df=None, pred_type='roughness', input_df: pd.DataFrame = None) -> np.ndarray:
 	# print("Creating sliding windows...")
 	window_size, overlap = read_config()
-	signal, _, _ = return_filtered_df(index)
+	signal, _, _ = return_filtered_df(index=index, input_df=input_df)
 	if window is not None:
 		window_size = window
 	if ovlap is not None:
@@ -107,7 +107,7 @@ def create_sliding_windows(index: int, window=None, ovlap=None, label_df=None, m
 	if label_df is not None:
 		labeled_signal = pd.merge_asof(signal, label_df[['Time', 'Label']], on='Time', direction='nearest')
 		sliding_window.add_labels(labeled_signal['Label'].to_numpy())
-		sliding_window.filter_labels(model_type=model_type)
+		sliding_window.filter_labels(pred_type=pred_type)
 	window_df = sliding_window.get_windows()
 	print("Individual time taken by creating slinding windows:", round(time.process_time()-start, 5), "seconds for data size:", len(signal))
 	return window_df
